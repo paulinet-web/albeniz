@@ -21,15 +21,31 @@ public class LibraryControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void getMusic () throws Exception {
+    public void testgetMusic () throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
-                    "[{'title':'You belong with me','author': 'Taylor Swift'}," + 
-                    "{'title':'Girls just want to have fun','author': 'Cyndi Lauper'}," + 
-                    "{'title':'Why not me?','author': 'The Judds'}]"));
+                    "[{'id': 1, 'title':'You belong with me','author': 'Taylor Swift'}," + 
+                    "{'id': 2, 'title':'Girls just want to have fun','author': 'Cyndi Lauper'}," + 
+                    "{'id': 3, 'title':'Why not me?','author': 'The Judds'}]"));
+    }
+
+    @Test
+    public void testgetMusicQuery () throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/library/music?query=WHY").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(
+                    "[{'id': 3, 'title':'Why not me?','author': 'The Judds'}]"));
+    }
+
+
+    @Test
+    public void testgetOneMusic () throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/library/music/2").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().json("{'id': 2, 'title':'Girls just want to have fun','author': 'Cyndi Lauper'}"));
+
+    }
 
 }
-  
-    
-}
+
