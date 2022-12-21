@@ -72,5 +72,12 @@ public class DataLibraryControllerTest {
     }
 
 
+    @Test void testInvalidTitle () throws Exception {
+        //appeler l'API POST
+        mockMvc.perform(MockMvcRequestBuilders.post("/library/music").contentType(MediaType.APPLICATION_JSON)
+        .content("{\"id\": 1, \"author\": \"Taylor Swift\"}"))
+        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
 }
 

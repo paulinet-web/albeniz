@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.theodo.albeniz.model.Tune;
 import com.theodo.albeniz.services.LibraryService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("library")
 public class LibraryController {
@@ -34,7 +36,7 @@ public class LibraryController {
     }
 
     @PostMapping("music")
-    void add(@RequestBody Tune tune) {
+    void add(@Valid @RequestBody Tune tune) {
         libraryService.addTune(tune);
     }
 }
