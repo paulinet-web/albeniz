@@ -14,9 +14,8 @@ import com.theodo.albeniz.model.Tune;
 @Service
 @Profile("data")
 public class DataLibraryService implements LibraryService{
-    
 
-    public final static Map<Integer, Tune> LIBRARY = new HashMap<>();
+    public final Map<Integer, Tune> LIBRARY = new HashMap<>();
         
 
     @Override
@@ -34,5 +33,15 @@ public class DataLibraryService implements LibraryService{
     public Tune getOne(int id) {
         return LIBRARY.get(id);
         }
+
+    @Override
+    public void addTune(Tune tune){
+        LIBRARY.put(tune.getId(), tune);
+    }
+
+    @Override
+    public void clean() {
+        LIBRARY.clear();
+    }
         
 }

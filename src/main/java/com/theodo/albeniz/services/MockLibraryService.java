@@ -39,5 +39,14 @@ public class MockLibraryService implements LibraryService {
     public Tune getOne(int id) {
         return LIBRARY.get(id);
         }
+
+    @Override
+    public void addTune(Tune tune){
+    }
+
+    @Override
+    public void clean() {
+        LIBRARY.clear();
+    }
         
 }

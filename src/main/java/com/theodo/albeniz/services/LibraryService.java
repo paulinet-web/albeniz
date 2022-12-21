@@ -10,4 +10,6 @@ import com.theodo.albeniz.model.Tune;
 public interface LibraryService {
     Collection<Tune> getAll(String query);
     Tune getOne(int id);
+    void addTune(Tune tune);
+    void clean();
 }
