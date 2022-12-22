@@ -15,12 +15,12 @@ import com.theodo.albeniz.model.Tune;
 @Profile("data")
 public class DataLibraryService implements LibraryService{
 
-    public final Map<Integer, Tune> LIBRARY = new HashMap<>();
+    public final Map<Integer, Tune> library = new HashMap<>();
         
 
     @Override
     public Collection<Tune> getAll(String query) {
-        return LIBRARY
+        return library
             .values()  // ne prendre que les values et pas les keys de la map
             .stream()
             .sorted(Comparator.comparing(Tune::getId))    // sort unsorted stream by IDs
@@ -31,17 +31,21 @@ public class DataLibraryService implements LibraryService{
 
     @Override
     public Tune getOne(int id) {
-        return LIBRARY.get(id);
+        return library.get(id);
         }
 
     @Override
     public void addTune(Tune tune){
-        LIBRARY.put(tune.getId(), tune);
+        library.put(tune.getId(), tune);
     }
 
     @Override
     public void clean() {
-        LIBRARY.clear();
+        library.clear();
     }
         
+    @Override
+    public void remove(int id){
+        library.remove(id);
+    }
 }
