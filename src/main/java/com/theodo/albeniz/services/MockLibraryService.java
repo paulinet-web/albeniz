@@ -48,5 +48,8 @@ public class MockLibraryService implements LibraryService {
     public void clean() {
         LIBRARY.clear();
     }
-        
+    
+    @Override
+    public void remove(int id){
+    }
 }

@@ -72,12 +72,41 @@ public class DataLibraryControllerTest {
     }
 
 
-    @Test void testInvalidTitle () throws Exception {
+    @Test 
+    void testInvalidTitle () throws Exception {
         //appeler l'API POST
         mockMvc.perform(MockMvcRequestBuilders.post("/library/music").contentType(MediaType.APPLICATION_JSON)
         .content("{\"id\": 1, \"author\": \"Taylor Swift\"}"))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
+    
+    @Test
+    void testRemoveTune () throws Exception {
+        // GET vide
+        mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().string("[]"));
+
+        // ADD
+        mockMvc.perform(MockMvcRequestBuilders.post("/library/music").contentType(MediaType.APPLICATION_JSON)
+        .content("{\"id\": 1, \"title\": \"You belong with me\", \"author\": \"Taylor Swift\"}"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // GET non vide
+        mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().json("[{'id': 1, 'title':'You belong with me','author': 'Taylor Swift'}]"));
+
+        // DELETE
+        mockMvc.perform(MockMvcRequestBuilders.delete("/library/music/1").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // GET vide
+        mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().string("[]"));
+
+    }
 }
 
