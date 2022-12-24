@@ -34,18 +34,38 @@ public class DataLibraryService implements LibraryService{
         return library.get(id);
         }
 
-    @Override
-    public void addTune(Tune tune){
-        library.put(tune.getId(), tune);
-    }
+    @Override  // true s'il n'existe pas (valid request on peut l'ajouter), else false
+    public boolean addTune(Tune tune){  
+        boolean tuneAbsent = !library.containsKey(tune.getId());
+        if (tuneAbsent) {
+            library.put(tune.getId(), tune);
+        }
+        return tuneAbsent;
+        }
 
     @Override
     public void clean() {
         library.clear();
     }
         
-    @Override
-    public void remove(int id){
-        library.remove(id);
+    @Override  //true if exists, else false (invalid request)
+    public boolean remove(int id){
+        boolean tunePresent = library.containsKey(id);
+        if (tunePresent){
+            library.remove(id);
+    }
+    return tunePresent;
+    }
+
+    @Override // true si l'objet existe et a été modifié, false si l'objet n'existe pas
+    public boolean modifyTune(int tuneId, Tune tune) {
+        if (library.containsKey(tuneId)){
+            Tune previousTune = library.get(tuneId);
+            previousTune.setTitle(tune.getTitle());
+            previousTune.setAuthor(tune.getAuthor());
+            library.put(tuneId, previousTune);
+            return true;
+        }
+        return false;
     }
 }

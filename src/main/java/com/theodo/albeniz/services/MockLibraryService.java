@@ -41,7 +41,8 @@ public class MockLibraryService implements LibraryService {
         }
 
     @Override
-    public void addTune(Tune tune){
+    public boolean addTune(Tune tune){
+        return false;
     }
 
     @Override
@@ -50,6 +51,12 @@ public class MockLibraryService implements LibraryService {
     }
     
     @Override
-    public void remove(int id){
+    public boolean remove(int id){
+        return true;
+    }
+
+    @Override
+    public boolean modifyTune(int tuneID, Tune tune) {
+        return false;
     }
 }
