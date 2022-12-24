@@ -49,7 +49,7 @@ public class DataLibraryControllerTest {
     @Test
     public void testgetOneMusic () throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/library/music/2").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
         .andExpect(MockMvcResultMatchers.content().string(""));
     }
 
@@ -63,7 +63,7 @@ public class DataLibraryControllerTest {
         //appeler l'API POST
         mockMvc.perform(MockMvcRequestBuilders.post("/library/music").contentType(MediaType.APPLICATION_JSON)
         .content("{\"id\": 1, \"title\": \"You belong with me\", \"author\": \"Taylor Swift\"}"))
-        .andExpect(MockMvcResultMatchers.status().isOk());
+        .andExpect(MockMvcResultMatchers.status().isCreated());
 
         //vérifier ensuite qu'il y a bien un titre inséré (grace à l'API GET)
         mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
@@ -91,7 +91,7 @@ public class DataLibraryControllerTest {
         // ADD
         mockMvc.perform(MockMvcRequestBuilders.post("/library/music").contentType(MediaType.APPLICATION_JSON)
         .content("{\"id\": 1, \"title\": \"You belong with me\", \"author\": \"Taylor Swift\"}"))
-        .andExpect(MockMvcResultMatchers.status().isOk());
+        .andExpect(MockMvcResultMatchers.status().isCreated());
 
         // GET non vide
         mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
