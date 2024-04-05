@@ -3,7 +3,7 @@ package com.theodo.albeniz.controller;
 import java.util.Collection;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,10 +23,10 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("library")
+@RequiredArgsConstructor
 public class LibraryController {
 
-    @Autowired
-    private LibraryService libraryService;
+    private final LibraryService libraryService;
 
     @GetMapping("music")
     public Collection<Tune> getMusic(@RequestParam(required = false) String query) {

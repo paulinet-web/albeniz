@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.theodo.albeniz.configs.LibraryProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +15,10 @@ import com.theodo.albeniz.model.Tune;
 
 @Service
 @Profile("mock")
+@RequiredArgsConstructor
 public class MockLibraryService implements LibraryService {
-    
+
+    public final LibraryProperties libraryProperties;
 
     public final static Map<Integer, Tune> LIBRARY = new HashMap<>();
 
@@ -32,6 +36,7 @@ public class MockLibraryService implements LibraryService {
                 .stream()
                 .sorted(Comparator.comparing(Tune::getId))
                 .filter(tune -> query == null || tune.getTitle().toUpperCase().contains(query.toUpperCase()))
+                .limit(libraryProperties.getMaxCollection())
                 .collect(Collectors.toList());
         }
 

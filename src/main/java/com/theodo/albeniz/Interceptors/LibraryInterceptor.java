@@ -20,10 +20,6 @@ public class LibraryInterceptor implements HandlerInterceptor {
 
     long startTime = System.currentTimeMillis();
     request.setAttribute("startTime", startTime);
-
-    String requestPath = request.getRequestURI();
-    log.info("Request Path: {}, has been called", requestPath);
-
     return true;
   }
 
@@ -32,10 +28,9 @@ public class LibraryInterceptor implements HandlerInterceptor {
     HttpServletRequest request,
     @NonNull HttpServletResponse response,
     @NonNull Object handler,
-    Exception ex) throws Exception {
+    Exception ex) {
     long startTime = (long) request.getAttribute("startTime");
     long duration = System.currentTimeMillis() - startTime;
-    String requestPath = request.getRequestURI();
-    log.info("Request Path: {}, Duration: {} ms", requestPath, duration);
+    log.info("Request Path: {}, Duration: {} ms", request.getRequestURI(), duration);
   }
 }

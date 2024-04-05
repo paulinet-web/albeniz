@@ -17,3 +17,8 @@ server:
 springdoc:
   api-docs:
     path: /api-docs
+
+application:
+  library:
+    max-collection: 2
+    ascending: false

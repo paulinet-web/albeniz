@@ -26,13 +26,15 @@ import com.theodo.albeniz.services.DataLibraryService;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @ActiveProfiles(profiles = "data")
-public class DataLibraryControllerTest {
+class DataLibraryControllerTest {
 
     private static final String CONTROLLER_PATH = "/library/music";
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
+
     @Autowired
-    private DataLibraryService dataLibraryService; 
+    DataLibraryService dataLibraryService;
+
     @AfterEach
     public void clean(){
         dataLibraryService.clean();
