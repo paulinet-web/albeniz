@@ -1,6 +1,10 @@
 package com.theodo.albeniz.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.theodo.albeniz.model.Tune;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.springframework.http.MediaType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -9,104 +13,99 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.theodo.albeniz.services.DataLibraryService;
 
-@SpringBootTest
 @AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @ActiveProfiles(profiles = "data")
 public class DataLibraryControllerTest {
 
+    private static final String CONTROLLER_PATH = "/library/music";
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired   //pas sure de le mettre, c la fonction de ActiveProfiles non ?
+    @Autowired
     private DataLibraryService dataLibraryService; 
-    @AfterEach   // cleaner library après chaque test, pour que les tests soient vraiement indépendants
+    @AfterEach
     public void clean(){
         dataLibraryService.clean();
     }
 
     @Test
-    public void testgetMusic () throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("[]"));
+    public void when_get_music_called_with_no_tunes_should_return_empty_list () throws Exception {
+        mockMvc.perform(get(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 
     @Test
-    public void testgetMusicQuery () throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/library/music?query=WHY").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("[]"));
+    public void when_get_music_with_query_called_with_no_tunes_should_return_empty_list () throws Exception {
+        mockMvc.perform(get(CONTROLLER_PATH +"?query=WHY").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 
 
     @Test
-    public void testgetOneMusic () throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/library/music/2").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().isNotFound())
-        .andExpect(MockMvcResultMatchers.content().string(""));
+    public void when_get_one_music_called_with_no_tunes_should_get_empty_string () throws Exception {
+        mockMvc.perform(get(CONTROLLER_PATH +"/2").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string(""));
     }
 
     @Test
-    public void testaddTune () throws Exception {
-        //en utilisant l'API GET tester qu'il n'y a rien dans la liste de titre,
-        mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(MockMvcResultMatchers.content().string("[]"));
+    public void when_add_tune_called_with_valid_tune_should_add_this_tune () throws Exception {
+        Tune validTune = new Tune(1,"You belong with me", "Taylor Swift");
 
-        //appeler l'API POST
-        mockMvc.perform(MockMvcRequestBuilders.post("/library/music").contentType(MediaType.APPLICATION_JSON)
-        .content("{\"id\": 1, \"title\": \"You belong with me\", \"author\": \"Taylor Swift\"}"))
-        .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(get(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string("[]"));
 
-        //vérifier ensuite qu'il y a bien un titre inséré (grace à l'API GET)
-        mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(MockMvcResultMatchers.content().json("[{'id': 1, 'title':'You belong with me','author': 'Taylor Swift'}]"));        
+        mockMvc.perform(post(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON)
+        .content(new ObjectMapper().writeValueAsString(validTune)))
+        .andExpect(status().isCreated());
+
+        mockMvc.perform(get(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("["+new ObjectMapper().writeValueAsString(validTune)+"]"));
     }
 
 
     @Test 
-    void testInvalidTitle () throws Exception {
-        //appeler l'API POST
-        mockMvc.perform(MockMvcRequestBuilders.post("/library/music").contentType(MediaType.APPLICATION_JSON)
+    void when_add_tune_called_with_invalid_title_tune_should_throw_bad_request () throws Exception {
+        mockMvc.perform(post(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON)
         .content("{\"id\": 1, \"author\": \"Taylor Swift\"}"))
-        .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        .andExpect(status().isBadRequest());
     }
 
     
     @Test
-    void testRemoveTune () throws Exception {
-        // GET vide
-        mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(MockMvcResultMatchers.content().string("[]"));
+    void test_remove_tune() throws Exception {
+        mockMvc.perform(get(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string("[]"));
 
-        // ADD
-        mockMvc.perform(MockMvcRequestBuilders.post("/library/music").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON)
         .content("{\"id\": 1, \"title\": \"You belong with me\", \"author\": \"Taylor Swift\"}"))
-        .andExpect(MockMvcResultMatchers.status().isCreated());
+        .andExpect(status().isCreated());
 
-        // GET non vide
-        mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(MockMvcResultMatchers.content().json("[{'id': 1, 'title':'You belong with me','author': 'Taylor Swift'}]"));
+        mockMvc.perform(get(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json("[{'id': 1, 'title':'You belong with me','author': 'Taylor Swift'}]"));
 
-        // DELETE
-        mockMvc.perform(MockMvcRequestBuilders.delete("/library/music/1").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(delete(CONTROLLER_PATH+"/1").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
 
-        // GET vide
-        mockMvc.perform(MockMvcRequestBuilders.get("/library/music").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(MockMvcResultMatchers.content().string("[]"));
-
+        mockMvc.perform(get(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string("[]"));
     }
 }
 

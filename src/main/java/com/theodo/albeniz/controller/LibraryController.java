@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,18 +43,18 @@ public class LibraryController {
     }
 
     @PostMapping("music")
-    public ResponseEntity<Tune> add(@Valid @RequestBody Tune tune) {
-        boolean created = libraryService.addTune(tune);
-        if (created){
+    public ResponseEntity<Tune> add( @RequestBody Tune tune) {
+        boolean isTuneAdded = libraryService.addTune(tune);
+        if (isTuneAdded){
             return new ResponseEntity<>(tune, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("music/{id}")
-    public ResponseEntity remove(@PathVariable("id") int tuneID){
-        boolean removed = libraryService.remove(tuneID);
-        if (removed){
+    public ResponseEntity<Tune> remove(@PathVariable("id") int tuneID){
+        boolean isRemoved = libraryService.remove(tuneID);
+        if (isRemoved){
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

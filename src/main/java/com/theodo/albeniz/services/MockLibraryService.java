@@ -17,21 +17,21 @@ public class MockLibraryService implements LibraryService {
     
 
     public final static Map<Integer, Tune> LIBRARY = new HashMap<>();
-        
+
     static {
             LIBRARY.put(1, new Tune(1, "You belong with me", "Taylor Swift"));
             LIBRARY.put(2, new Tune(2, "Girls just want to have fun", "Cyndi Lauper"));
             LIBRARY.put(3, new Tune(3, "Why not me?", "The Judds"));
         }
 
-    
+
     @Override
     public Collection<Tune> getAll(String query) {
         return LIBRARY
-                .values()  // ne prendre que les values et pas les keys de la map
+                .values()
                 .stream()
-                .sorted(Comparator.comparing(Tune::getId))    // sort unsorted stream by IDs
-                .filter(tune -> query == null || tune.getTitle().toUpperCase().contains(query.toUpperCase()))   // if query == null, ne filtre pas --> prend tous les tunes
+                .sorted(Comparator.comparing(Tune::getId))
+                .filter(tune -> query == null || tune.getTitle().toUpperCase().contains(query.toUpperCase()))
                 .collect(Collectors.toList());
         }
 
