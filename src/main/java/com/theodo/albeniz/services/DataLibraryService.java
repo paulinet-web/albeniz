@@ -15,57 +15,56 @@ import com.theodo.albeniz.model.Tune;
 @Profile("data")
 public class DataLibraryService implements LibraryService{
 
-    public final Map<Integer, Tune> library = new HashMap<>();
+    public final Map<Integer, Tune> LIBRARY = new HashMap<>();
         
 
     @Override
     public Collection<Tune> getAll(String query) {
-        return library
-            .values()  // ne prendre que les values et pas les keys de la map
+        return LIBRARY
+            .values()
             .stream()
-            .sorted(Comparator.comparing(Tune::getId))    // sort unsorted stream by IDs
-            .filter(tune -> query == null || tune.getTitle().toUpperCase().contains(query.toUpperCase()))   // if query == null, ne filtre pas --> prend tous les tunes
+            .sorted(Comparator.comparing(Tune::getId))
+            .filter(tune -> query == null || tune.getTitle().toUpperCase().contains(query.toUpperCase()))
             .collect(Collectors.toList());
-            
         }
 
     @Override
     public Tune getOne(int id) {
-        return library.get(id);
+        return LIBRARY.get(id);
         }
 
-    @Override  // true s'il n'existe pas (valid request on peut l'ajouter), else false
+    @Override
     public boolean addTune(Tune tune){  
-        boolean tuneAbsent = !library.containsKey(tune.getId());
-        if (tuneAbsent) {
-            library.put(tune.getId(), tune);
+        boolean isTuneAbsent = !LIBRARY.containsKey(tune.getId());
+        if (isTuneAbsent) {
+            LIBRARY.put(tune.getId(), tune);
         }
-        return tuneAbsent;
+        return isTuneAbsent;
         }
 
     @Override
     public void clean() {
-        library.clear();
+        LIBRARY.clear();
     }
         
-    @Override  //true if exists, else false (invalid request)
+    @Override
     public boolean remove(int id){
-        boolean tunePresent = library.containsKey(id);
-        if (tunePresent){
-            library.remove(id);
+        boolean isTunePresent = LIBRARY.containsKey(id);
+        if (isTunePresent){
+            LIBRARY.remove(id);
     }
-    return tunePresent;
+        return isTunePresent;
     }
 
-    @Override // true si l'objet existe et a été modifié, false si l'objet n'existe pas
+    @Override
     public boolean modifyTune(int tuneId, Tune tune) {
-        if (library.containsKey(tuneId)){
-            Tune previousTune = library.get(tuneId);
+        boolean tuneExists = LIBRARY.containsKey(tuneId);
+        if (tuneExists){
+            Tune previousTune = LIBRARY.get(tuneId);
             previousTune.setTitle(tune.getTitle());
             previousTune.setAuthor(tune.getAuthor());
-            library.put(tuneId, previousTune);
-            return true;
+            LIBRARY.put(tuneId, previousTune);
         }
-        return false;
+        return tuneExists;
     }
 }
