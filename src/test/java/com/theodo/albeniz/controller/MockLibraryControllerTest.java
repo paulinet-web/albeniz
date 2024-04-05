@@ -1,9 +1,6 @@
 package com.theodo.albeniz.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.theodo.albeniz.model.Tune;
-import com.theodo.albeniz.services.MockLibraryService;
 import org.springframework.http.MediaType;
 
 import org.junit.jupiter.api.Test;
@@ -17,20 +14,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(profiles = "mock")
 public class MockLibraryControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     private final String CONTROLLER_PATH = "/library/music";
-
-    private final List<Tune> TUNES = new ArrayList<>(MockLibraryService.LIBRARY.values());
 
 
     @Test
@@ -38,7 +30,9 @@ public class MockLibraryControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get(CONTROLLER_PATH).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
-                  new ObjectMapper().writeValueAsString(TUNES)));
+                  "[{'id': 1, 'title':'You belong with me','author':'Taylor Swift'},"+
+                    "{'id': 2, 'title':'Girls just want to have fun','author': 'Cyndi Lauper'}]"));
+
     }
 
     @Test

@@ -6,25 +6,32 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.theodo.albeniz.configs.LibraryProperties;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.theodo.albeniz.model.Tune;
 
+@Slf4j
 @Service
+@AllArgsConstructor
 @Profile("data")
 public class DataLibraryService implements LibraryService{
 
-    public final Map<Integer, Tune> LIBRARY = new HashMap<>();
-        
+    public final LibraryProperties libraryProperties;
 
-    @Override
+    public final Map<Integer, Tune> LIBRARY = new HashMap<>();
+
+  @Override
     public Collection<Tune> getAll(String query) {
         return LIBRARY
             .values()
             .stream()
             .sorted(Comparator.comparing(Tune::getId))
             .filter(tune -> query == null || tune.getTitle().toUpperCase().contains(query.toUpperCase()))
+            .limit(libraryProperties.getMaxCollection())
             .collect(Collectors.toList());
         }
 
